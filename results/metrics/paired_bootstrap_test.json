@@ -1,0 +1,94 @@
+{
+  "analysis": "class-stratified paired bootstrap",
+  "test_queries": 5400,
+  "gallery_images": 16200,
+  "replicates": 2000,
+  "seed": 2026,
+  "interval": "95% percentile confidence interval",
+  "comparison": "paired per-query difference versus cosine baseline",
+  "selected_fixed_alpha": 0.5,
+  "selected_adaptive_temperature": 0.2,
+  "results": [
+    {
+      "method": "fixed_reciprocal_reranking",
+      "metric": "top1_accuracy",
+      "delta_vs_baseline": -0.006481481481481481,
+      "ci95_lower": -0.01425925925925926,
+      "ci95_upper": 0.0014814814814814814,
+      "bootstrap_replicates": 2000,
+      "seed": 2026,
+      "interval_excludes_zero": false
+    },
+    {
+      "method": "fixed_reciprocal_reranking",
+      "metric": "hit_rate_at_5",
+      "delta_vs_baseline": -0.02,
+      "ci95_lower": -0.024444444444444446,
+      "ci95_upper": -0.015925925925925927,
+      "bootstrap_replicates": 2000,
+      "seed": 2026,
+      "interval_excludes_zero": true
+    },
+    {
+      "method": "fixed_reciprocal_reranking",
+      "metric": "hit_rate_at_10",
+      "delta_vs_baseline": -0.015925925925925927,
+      "ci95_lower": -0.019444444444444445,
+      "ci95_upper": -0.012587962962962988,
+      "bootstrap_replicates": 2000,
+      "seed": 2026,
+      "interval_excludes_zero": true
+    },
+    {
+      "method": "fixed_reciprocal_reranking",
+      "metric": "map_at_100",
+      "delta_vs_baseline": 0.01184884562844047,
+      "ci95_lower": 0.0112418860567034,
+      "ci95_upper": 0.012408324677003793,
+      "bootstrap_replicates": 2000,
+      "seed": 2026,
+      "interval_excludes_zero": true
+    },
+    {
+      "method": "adaptive_reciprocal_reranking",
+      "metric": "top1_accuracy",
+      "delta_vs_baseline": 0.0022222222222222222,
+      "ci95_lower": -0.004629629629629629,
+      "ci95_upper": 0.009074074074074075,
+      "bootstrap_replicates": 2000,
+      "seed": 2026,
+      "interval_excludes_zero": false
+    },
+    {
+      "method": "adaptive_reciprocal_reranking",
+      "metric": "hit_rate_at_5",
+      "delta_vs_baseline": -0.011851851851851851,
+      "ci95_lower": -0.015370370370370371,
+      "ci95_upper": -0.008333333333333333,
+      "bootstrap_replicates": 2000,
+      "seed": 2026,
+      "interval_excludes_zero": true
+    },
+    {
+      "method": "adaptive_reciprocal_reranking",
+      "metric": "hit_rate_at_10",
+      "delta_vs_baseline": -0.011666666666666667,
+      "ci95_lower": -0.014814814814814815,
+      "ci95_upper": -0.008699074074074099,
+      "bootstrap_replicates": 2000,
+      "seed": 2026,
+      "interval_excludes_zero": true
+    },
+    {
+      "method": "adaptive_reciprocal_reranking",
+      "metric": "map_at_100",
+      "delta_vs_baseline": 0.009806911501423078,
+      "ci95_lower": 0.009359124797203012,
+      "ci95_upper": 0.010264647396606548,
+      "bootstrap_replicates": 2000,
+      "seed": 2026,
+      "interval_excludes_zero": true
+    }
+  ],
+  "interpretation_note": "Intervals quantify query-sampling uncertainty conditional on this gallery, encoder, split, and validation-selected settings. They do not capture uncertainty across training seeds or datasets."
+}

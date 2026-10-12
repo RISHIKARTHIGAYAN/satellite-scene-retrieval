@@ -1,0 +1,38 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Datasets and downloaded model weights
+data/
+datasets/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Environment variables and local configuration
+.env
+.env.*
+
+# Generated experiment outputs are excluded by default.
+# Explicitly add selected, verified artifacts when preparing the release.
+results/*
+!results/README.md
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

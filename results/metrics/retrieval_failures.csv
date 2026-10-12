@@ -1,0 +1,5 @@
+query_index,true_class,top1_predicted_class,correct_class_in_top5,rank_1_class,rank_1_score,rank_1_gallery_index,rank_2_class,rank_2_score,rank_2_gallery_index,rank_3_class,rank_3_score,rank_3_gallery_index,rank_4_class,rank_4_score,rank_4_gallery_index,rank_5_class,rank_5_score,rank_5_gallery_index
+325,River,Highway,True,Highway,0.7947087287902832,15844,River,0.7776085138320923,1515,River,0.7733068466186523,1866,River,0.7651078701019287,5632,PermanentCrop,0.7615885734558105,7360
+54,Highway,River,True,River,0.8000515699386597,260,Highway,0.7897512912750244,7962,Highway,0.7671524286270142,9556,Highway,0.7657012939453125,171,Highway,0.761474072933197,5158
+321,HerbaceousVegetation,PermanentCrop,True,PermanentCrop,0.8279067277908325,5822,PermanentCrop,0.8264025449752808,9389,HerbaceousVegetation,0.8218480348587036,8951,PermanentCrop,0.8213987946510315,10356,PermanentCrop,0.8205804824829102,9798
+1126,Industrial,Residential,False,Residential,0.8488224744796753,8186,Residential,0.8449331521987915,10455,Residential,0.8435503244400024,6335,Residential,0.8416092395782471,7698,Residential,0.8374813795089722,6448

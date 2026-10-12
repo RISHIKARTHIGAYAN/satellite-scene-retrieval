@@ -1,0 +1,24 @@
+﻿{
+  "project_name": "satellite-scene-retrieval",
+  "seed": 42,
+  "dataset": {
+    "name": "EuroSAT",
+    "num_classes": 10,
+    "image_size": 128
+  },
+  "encoder": {
+    "architecture": "ResNet18",
+    "weights": "ImageNet",
+    "embedding_dimension": 512,
+    "normalize_embeddings": true
+  },
+  "retrieval": {
+    "similarity": "cosine",
+    "top_k": 100,
+    "evaluation_k": [1, 5, 10, 100]
+  },
+  "reranking": {
+    "alpha": 0.7,
+    "reciprocal_k": 20
+  }
+}

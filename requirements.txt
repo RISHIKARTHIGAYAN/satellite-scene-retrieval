@@ -1,0 +1,12 @@
+﻿# Core dependencies for satellite scene retrieval.
+numpy==2.4.6
+pandas==3.0.6
+faiss-cpu==1.15.1
+Pillow==12.3.0
+datasets==5.1.0
+huggingface-hub==2.2.0
+matplotlib==3.11.2
+pytest==9.1.1
+
+# Install torch and torchvision separately for your OS and hardware.
+# See https://pytorch.org/get-started/locally/
