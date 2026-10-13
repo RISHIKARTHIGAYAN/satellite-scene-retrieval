@@ -1,10 +1,10 @@
 # GeoFuse-R: Satellite Scene Retrieval with Reciprocal-Neighbor Reranking
 
-A reproducible research study evaluating fixed and query-adaptive reciprocal-neighbor reranking for satellite-scene image retrieval.
+A reproducible research study evaluating fixed, query-adaptive, and selective reciprocal-neighbor reranking for satellite-scene image retrieval.
 
 ## Research question
 
-Can reciprocal-neighbor relationships improve the overall ranking of relevant satellite scenes beyond cosine-similarity retrieval using frozen ImageNet-pretrained visual features? How does reranking affect the first few retrieved results compared with overall ranking quality?
+Can reciprocal-neighbor relationships improve the overall ranking of relevant satellite scenes beyond cosine-similarity retrieval using frozen ImageNet-pretrained visual features? How does reranking affect the first few retrieved results compared with overall ranking quality? Can a query-confidence heuristic selectively rerank difficult queries while preserving retrieval quality and reducing the reranking workload?
 
 ## Method
 
@@ -15,24 +15,27 @@ The retrieval pipeline uses:
 3. **Initial retrieval:** Exact cosine-similarity search using FAISS inner-product search.
 4. **Fixed reciprocal reranking:** Combines initial similarity with reciprocal-neighborhood Jaccard overlap using a fixed weight.
 5. **Adaptive reciprocal reranking:** Adjusts the similarity weight using the gap between the first and second cosine-similarity scores.
+6. **Selective reciprocal reranking:** Reranks queries whose top-two cosine-similarity margin falls below a validation-selected threshold. Queries outside the threshold retain their original rankings.
 
-The adaptive weighting rule is an experimental heuristic. It is not a calibrated estimate of retrieval correctness, and its novelty has not been established.
+The adaptive weighting rule and selective margin-threshold rule are experimental heuristics. Neither is a calibrated estimate of retrieval correctness, and their methodological novelty has not been established.
 
 ## Dataset and evaluation protocol
 
 - **Dataset:** EuroSAT RGB, loaded from `timm/eurosat-rgb`.
-- **Gallery:** Official training split - 16,200 images.
-- **Validation queries:** Official validation split - 5,400 images.
-- **Test queries:** Official test split - 5,400 images.
+- **Gallery:** Official training split — 16,200 images.
+- **Validation queries:** Official validation split — 5,400 images.
+- **Test queries:** Official test split — 5,400 images.
 - **Encoder:** Frozen ImageNet-pretrained ResNet-18.
 - **Embedding dimension:** 512.
-- **Input image size:** 128 x 128 pixels.
+- **Input image size:** 128 × 128 pixels.
 - **Retrieval candidate pool:** Top 100 candidates per query.
 - **Reciprocal neighborhood size:** 20.
 
 The training split is the retrieval gallery. Reranking parameters are selected using validation mAP@100, and the selected configurations are then evaluated on the held-out test split.
 
-The recorded experiment selected fixed alpha = 0.50 and adaptive temperature = 0.20, with adaptive alpha bounds of 0.70 and 0.95.
+The primary recorded experiment selected fixed alpha = 0.50 and adaptive temperature = 0.20, with adaptive alpha bounds of 0.70 and 0.95.
+
+The additional selective experiment selected a margin threshold of 0.20 using validation mAP@100. This threshold selected all 5,400 test queries for reranking, so the experiment did not demonstrate a reduction in reranking workload.
 
 ## Metrics
 
@@ -47,13 +50,23 @@ These are class-label retrieval metrics. They do not establish geographic simila
 
 | Method | Top-1 | Hit@5 | Hit@10 | mAP@100 |
 |---|---:|---:|---:|---:|
-| Cosine baseline | 0.8789 | 0.9707 | 0.9843 | 0.6786 |
+| Cosine baseline | 0.8789 | **0.9707** | **0.9843** | 0.6786 |
 | Fixed reciprocal reranking | 0.8724 | 0.9507 | 0.9683 | **0.6905** |
 | Adaptive reciprocal reranking | **0.8811** | 0.9589 | 0.9726 | 0.6884 |
+| Selective reciprocal reranking | 0.8724 | 0.9507 | 0.9683 | **0.6905** |
 
 ![Official-split retrieval metric comparison](results/figures/reranking_comparison.png)
 
-The results show a trade-off: both reranking methods improve mAP@100 while reducing HitRate@5 and HitRate@10. The adaptive method has the highest observed Top-1 accuracy, but its difference from the baseline is inconclusive under the reported bootstrap analysis.
+The results show a trade-off: both fixed and adaptive reranking improve mAP@100 while reducing HitRate@5 and HitRate@10. The adaptive method has the highest observed Top-1 accuracy, but its difference from the baseline is inconclusive under the reported bootstrap analysis.
+
+The selective experiment produced the same reported test metrics as fixed reranking with alpha = 0.50. Its selected threshold reranked 100% of queries, so it provided no demonstrated computational saving or retrieval-quality advantage over fixed reranking.
+
+The selective experiment is recorded separately in:
+
+- `results/metrics/selective_split_reranking.json`
+- `results/metrics/selective_split_reranking.csv`
+
+The existing comparison figure and paired-bootstrap analysis cover the original cosine, fixed, and adaptive methods. They do not include a separate selective-method bootstrap analysis.
 
 ## Paired bootstrap analysis
 
@@ -72,7 +85,7 @@ A class-stratified paired bootstrap with 2,000 replicates estimates uncertainty 
 
 The intervals exclude zero for both methods' mAP@100 gains and HitRate@5/10 decreases. The Top-1 differences remain inconclusive.
 
-These intervals quantify query-sampling uncertainty conditional on the chosen gallery, encoder, dataset split, and validation-selected parameters. They do not establish generalization to other datasets or encoders.
+These intervals quantify query-sampling uncertainty conditional on the chosen gallery, encoder, dataset split, and validation-selected parameters. They do not establish generalization to other datasets or encoders. The selective method has not been included in this paired-bootstrap analysis.
 
 ## Repository layout
 
@@ -104,13 +117,21 @@ Run the automated tests:
 python -m pytest -q
 ```
 
-Run the validation-selected retrieval experiment:
+Run the original validation-selected retrieval experiment:
 
 ```powershell
 python .\scripts\run_reranking.py
 ```
 
-Run the paired-bootstrap analysis:
+Run the additional selective-reranking experiment:
+
+```powershell
+python .\scripts\run_selective_reranking.py
+```
+
+The selective experiment writes separate JSON and CSV artifacts so that the original official-split results remain unchanged. Its threshold is selected on validation mAP@100; the test split is used only for final evaluation.
+
+Run the paired-bootstrap analysis for the original fixed and adaptive comparisons:
 
 ```powershell
 python .\scripts\analyze_bootstrap.py
@@ -138,10 +159,11 @@ The saved official-split JSON files record the selected parameters and evaluatio
 - Evaluation uses one dataset, one gallery, and one encoder.
 - Retrieval correctness is based on scene class labels, not geographic location.
 - Reciprocal-neighbor reranking is an established family of methods; this project does not claim to introduce the general concept.
-- The adaptive weighting rule is heuristic and requires further validation.
+- The adaptive weighting rule and selective margin-threshold rule are heuristics and require further validation.
+- The selective experiment did not demonstrate computational savings because the validation-selected threshold reranked every test query.
 - Bootstrap intervals reflect query-sampling uncertainty, not uncertainty across datasets, encoders, or independent training runs.
-- No claim of state-of-the-art performance is made.
+- No claim of state-of-the-art performance or methodological novelty is made.
 
 ## Project status
 
-Research prototype with a held-out evaluation, uncertainty analysis, and reproducibility checks. Further validation on additional datasets and encoders is needed before drawing broader conclusions.
+Research prototype with a held-out evaluation, uncertainty analysis, reproducibility checks, and an additional selective-reranking experiment. Further validation on additional datasets and encoders is needed before drawing broader conclusions.

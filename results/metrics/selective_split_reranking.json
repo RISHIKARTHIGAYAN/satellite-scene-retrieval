@@ -1,0 +1,130 @@
+{
+  "experiment": "validation_selected_selective_official_split_evaluation",
+  "dataset": "timm/eurosat-rgb",
+  "encoder": "ImageNet-pretrained ResNet-18",
+  "device": "cuda",
+  "seed": 42,
+  "gallery_official_split": "train",
+  "validation_official_split": "validation",
+  "test_official_split": "test",
+  "num_gallery": 16200,
+  "num_validation_queries": 5400,
+  "num_test_queries": 5400,
+  "embedding_dimension": 512,
+  "candidate_k": 100,
+  "reciprocal_k": 20,
+  "selection_metric": "validation map_at_100",
+  "fixed_alpha_candidates": [
+    0.5,
+    0.6,
+    0.7,
+    0.8,
+    0.9,
+    1.0
+  ],
+  "selected_fixed_alpha": 0.5,
+  "fixed_validation_metrics": {
+    "top1_accuracy": 0.8661111111111112,
+    "hit_rate_at_5": 0.9464814814814815,
+    "hit_rate_at_10": 0.965925925925926,
+    "map_at_100": 0.682471151648973
+  },
+  "adaptive_alpha_bounds": [
+    0.7,
+    0.95
+  ],
+  "adaptive_temperature_candidates": [
+    0.05,
+    0.1,
+    0.2
+  ],
+  "selected_adaptive_temperature": 0.2,
+  "adaptive_validation_metrics": {
+    "metrics": {
+      "top1_accuracy": 0.8724074074074074,
+      "hit_rate_at_5": 0.9566666666666667,
+      "hit_rate_at_10": 0.9729629629629629,
+      "map_at_100": 0.680258103513552
+    },
+    "alpha_mean": 0.7128134369850159,
+    "alpha_std": 0.01357755996286869
+  },
+  "test_adaptive_alpha_summary": {
+    "mean": 0.7130448222160339,
+    "std": 0.013608669862151146,
+    "min": 0.7000014185905457,
+    "max": 0.8416829109191895
+  },
+  "selective_threshold_candidates": [
+    0.0,
+    0.005,
+    0.01,
+    0.02,
+    0.03,
+    0.05,
+    0.1,
+    0.2
+  ],
+  "selected_selective_threshold": 0.2,
+  "selective_alpha": 0.5,
+  "selective_validation_metrics": {
+    "metrics": {
+      "top1_accuracy": 0.8661111111111112,
+      "hit_rate_at_5": 0.9464814814814815,
+      "hit_rate_at_10": 0.965925925925926,
+      "map_at_100": 0.682471151648973
+    },
+    "reranked_fraction": 1.0,
+    "reranked_queries": 5400
+  },
+  "test_selective_reranking_fraction": 1.0,
+  "test_selective_reranked_queries": 5400,
+  "test_metrics": {
+    "cosine_baseline": {
+      "top1_accuracy": 0.8788888888888889,
+      "hit_rate_at_5": 0.9707407407407408,
+      "hit_rate_at_10": 0.9842592592592593,
+      "map_at_100": 0.6786379544582796
+    },
+    "fixed_reciprocal_reranking": {
+      "top1_accuracy": 0.8724074074074074,
+      "hit_rate_at_5": 0.9507407407407408,
+      "hit_rate_at_10": 0.9683333333333334,
+      "map_at_100": 0.69048680008672
+    },
+    "adaptive_reciprocal_reranking": {
+      "top1_accuracy": 0.8811111111111111,
+      "hit_rate_at_5": 0.9588888888888889,
+      "hit_rate_at_10": 0.9725925925925926,
+      "map_at_100": 0.6884448659597027
+    },
+    "selective_reciprocal_reranking": {
+      "top1_accuracy": 0.8724074074074074,
+      "hit_rate_at_5": 0.9507407407407408,
+      "hit_rate_at_10": 0.9683333333333334,
+      "map_at_100": 0.69048680008672
+    }
+  },
+  "test_deltas_vs_baseline": {
+    "fixed_reciprocal_reranking": {
+      "top1_accuracy": -0.0064814814814815325,
+      "hit_rate_at_5": -0.020000000000000018,
+      "hit_rate_at_10": -0.0159259259259259,
+      "map_at_100": 0.011848845628440463
+    },
+    "adaptive_reciprocal_reranking": {
+      "top1_accuracy": 0.0022222222222221255,
+      "hit_rate_at_5": -0.011851851851851891,
+      "hit_rate_at_10": -0.011666666666666714,
+      "map_at_100": 0.009806911501423099
+    },
+    "selective_reciprocal_reranking": {
+      "top1_accuracy": -0.0064814814814815325,
+      "hit_rate_at_5": -0.020000000000000018,
+      "hit_rate_at_10": -0.0159259259259259,
+      "map_at_100": 0.011848845628440463
+    }
+  },
+  "protocol_note": "The official training split is the gallery. Fixed alpha, adaptive temperature, and selective margin threshold are selected on validation queries by mAP@100. The official test split is evaluated after selection and is not used for parameter tuning. Selective reranking uses the top-two cosine-score margin and does not use query labels at inference time.",
+  "limitations": "This experiment evaluates a selective reranking heuristic. It does not establish methodological novelty or generalization beyond this dataset, gallery, encoder, and split."
+}

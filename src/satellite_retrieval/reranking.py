@@ -161,3 +161,53 @@ def adaptive_rerank(
     )
 
     return reranked_scores, reranked_indices, query_alphas
+
+
+def selective_rerank(
+    initial_scores: np.ndarray,
+    initial_indices: np.ndarray,
+    reciprocal_sets: list[set[int]],
+    margin_threshold: float,
+    alpha: float = 0.5,
+    query_neighbor_k: int = 20,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Rerank only queries whose top-two similarity margin is small.
+
+    The margin threshold must be selected using validation data only.
+    Queries with a margin below the threshold are reranked; all others
+    retain their original ranking and scores.
+
+    Returns:
+        scores: Output scores in output ranking order.
+        indices: Output candidate indices in ranking order.
+        reranked_mask: Boolean array indicating which queries were reranked.
+    """
+    scores, indices = _validate_inputs(
+        initial_scores, initial_indices, reciprocal_sets
+    )
+
+    if not np.isfinite(margin_threshold) or margin_threshold < 0:
+        raise ValueError("margin_threshold must be finite and non-negative.")
+    if not 0.0 <= alpha <= 1.0:
+        raise ValueError("alpha must be between 0 and 1.")
+    if query_neighbor_k <= 0:
+        raise ValueError("query_neighbor_k must be positive.")
+
+    margins = np.maximum(scores[:, 0] - scores[:, 1], 0.0)
+    reranked_mask = margins < margin_threshold
+
+    output_scores = scores.copy()
+    output_indices = indices.copy()
+
+    if np.any(reranked_mask):
+        reranked_scores, reranked_indices = _rerank_with_weights(
+            scores[reranked_mask],
+            indices[reranked_mask],
+            reciprocal_sets,
+            np.full(np.sum(reranked_mask), alpha, dtype=np.float32),
+            query_neighbor_k,
+        )
+        output_scores[reranked_mask] = reranked_scores
+        output_indices[reranked_mask] = reranked_indices
+
+    return output_scores, output_indices, reranked_mask
